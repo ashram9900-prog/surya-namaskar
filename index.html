@@ -12,6 +12,20 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Surya Namaskar" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <!-- Preload all audio so it's ready before the session starts -->
+  <link rel="preload" href="sounds/step-1-pranamasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-2-11-hasta-uttanasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-3-10-hasta-padasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-4-ashwa-sanchalanasana-right.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-4-ashwa-sanchalanasana-left.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-5-dandasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-6-ashtanga-namaskara.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-7-bhujangasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-8-adho-mukha-svanasana.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-9-ashwa-sanchalanasana-right-forward.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-9-ashwa-sanchalanasana-left-forward.m4a" as="audio" />
+  <link rel="preload" href="sounds/step-12-tadasana.mp4" as="audio" />
   <style>
     :root {
       --cream: #fdf6ec;
@@ -922,9 +936,11 @@
 
   function playPoseAudio(poseIdx) {
     const src = currentHalf === 1 ? SOUNDS_RIGHT[poseIdx] : SOUNDS_LEFT[poseIdx];
+    poseAudioEl.pause();
     poseAudioEl.src = src;
+    const tryPlay = () => poseAudioEl.play().catch(() => {});
+    poseAudioEl.addEventListener('canplaythrough', tryPlay, { once: true });
     poseAudioEl.load();
-    poseAudioEl.play().catch(() => {});
   }
 
   // ─── HELPERS ─────────────────────────────────────────────────────────────
