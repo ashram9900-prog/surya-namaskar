@@ -860,11 +860,11 @@
     bgMuted = !bgMuted;
     bgMusic.muted = bgMuted;
     const icon = bgMuted ? '🔇' : '🔊';
-    document.getElementById('mute-icon').textContent      = icon;
+    document.getElementById('mute-icon').textContent       = icon;
     document.getElementById('mute-icon-slide').textContent = icon;
   }
 
-  // unlock & start on first interaction
+  // unlock & start on first interaction (desktop fallback)
   document.addEventListener('click', startBgMusic, { once: true });
 
   // ─── AUDIO ───────────────────────────────────────────────────────────────
@@ -900,18 +900,34 @@
 
   let audioUnlocked = false;
   let currentAudio = null;
+  let preloadedAudio = {};
 
   function unlockAudio() {
     if (audioUnlocked) return;
-    const silent = new Audio("sounds/step-1-pranamasana.m4a");
+    audioUnlocked = true;
+
+    // Pre-load every audio file during the gesture so iOS allows playback later
+    const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
+    allSounds.forEach(src => {
+      const a = new Audio(src);
+      a.load();
+      preloadedAudio[src] = a;
+    });
+
+    // Silently play one to fully unlock the audio context on iOS
+    const silent = preloadedAudio[SOUNDS_RIGHT[0]];
     silent.volume = 0;
-    silent.play().then(() => { silent.pause(); audioUnlocked = true; }).catch(() => {});
+    silent.play().then(() => { silent.pause(); silent.currentTime = 0; silent.volume = 1; }).catch(() => {});
+
+    // Start background music in the same gesture
+    startBgMusic();
   }
 
   function playPoseAudio(poseIdx) {
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
     const src = currentHalf === 1 ? SOUNDS_RIGHT[poseIdx] : SOUNDS_LEFT[poseIdx];
-    currentAudio = new Audio(src);
+    currentAudio = preloadedAudio[src] || new Audio(src);
+    currentAudio.currentTime = 0;
     currentAudio.play().catch(() => {});
   }
 
