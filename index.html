@@ -887,9 +887,24 @@
   // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
   const bgMusic = new Audio('sounds/background.mp3');
   bgMusic.loop   = true;
-  bgMusic.volume = isMobile ? 0.02 : 0.05;
+    bgMusic.volume = isMobile ? 0.02 : 0.05;
   let bgMuted = false;
   let bgStarted = false;
+
+  function fadeBgMusic() {
+    const step = bgMusic.volume / 20;
+    const fade = setInterval(() => {
+      if (bgMusic.volume > step) {
+        bgMusic.volume = Math.max(0, bgMusic.volume - step);
+      } else {
+        bgMusic.volume = 0;
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+        bgStarted = false;
+        clearInterval(fade);
+      }
+    }, 100);
+  }
 
   function startBgMusic() {
     if (bgStarted) return;
@@ -1124,7 +1139,7 @@
   function stopSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    bgMusic.pause(); bgMusic.currentTime = 0; bgStarted = false;
+    fadeBgMusic();
     hide('slideshow');
     show('welcome');
     isPaused = false;
@@ -1134,7 +1149,7 @@
   function endSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    bgMusic.pause(); bgMusic.currentTime = 0; bgStarted = false;
+    fadeBgMusic();
     document.getElementById('progress-bar').style.width = '100%';
 
     const totalAsanas = totalRounds * 24;
