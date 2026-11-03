@@ -887,7 +887,7 @@
   // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
   const bgMusic = new Audio('sounds/background.mp3');
   bgMusic.loop   = true;
-  bgMusic.volume = 0.05;  // soft — well below voice instructions
+  bgMusic.volume = window.matchMedia('(max-width: 768px)').matches ? 0.02 : 0.05;
   let bgMuted = false;
   let bgStarted = false;
 
