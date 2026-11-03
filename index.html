@@ -964,7 +964,7 @@
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     poseGainNode = audioCtx.createGain();
-    poseGainNode.gain.value = isMobile ? 1.95 : 1.0;
+    poseGainNode.gain.value = 1.95;
     poseGainNode.connect(audioCtx.destination);
   }
 
