@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surya Namaskar — Sun Salutation</title>
+  <style>
+    :root {
+      --cream: #fdf6ec;
+      --warm-white: #fffdf8;
+      --sand: #e8d9c0;
+      --taupe: #b8a899;
+      --accent: #c8843a;
+      --accent-light: #e8a95a;
+      --text-dark: #3a2e22;
+      --text-mid: #6b5744;
+      --text-light: #9e8670;
+      --shadow: rgba(90, 60, 30, 0.12);
+      --transition: 0.5s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── WELCOME SCREEN ── */
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .sun-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1.5rem;
+      animation: spinSlow 20s linear infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    #welcome h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: normal;
+      letter-spacing: 0.05em;
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+
+    #welcome .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 0 auto 1.8rem;
+    }
+
+    #welcome p {
+      max-width: 480px;
+      color: var(--text-mid);
+      line-height: 1.8;
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .input-group label {
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+
+    .input-group input {
+      width: 100px;
+      text-align: center;
+      font-size: 1.6rem;
+      font-family: 'Georgia', serif;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--sand);
+      border-radius: 8px;
+      background: var(--warm-white);
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus { border-color: var(--accent); }
+
+    .pace-options {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .pace-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.6rem 1.2rem;
+      border: 2px solid var(--sand);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--warm-white);
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+    }
+
+    .pace-option input[type="radio"] { display: none; }
+
+    .pace-option span {
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      font-family: 'Georgia', serif;
+    }
+
+    .pace-option small {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .pace-option.selected,
+    .pace-option:has(input:checked) {
+      border-color: var(--accent);
+      background: #fef3e6;
+    }
+
+    .error-msg {
+      font-size: 0.85rem;
+      color: #c0392b;
+      min-height: 1.2em;
+    }
+
+    .btn {
+      padding: 0.85rem 2.8rem;
+      font-size: 1rem;
+      font-family: 'Georgia', serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px var(--shadow);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+
+    .btn-outline:hover { background: var(--accent); color: white; }
+
+    /* ── SLIDESHOW SCREEN ── */
+    #slideshow {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      width: 100%;
+      background: var(--warm-white);
+    }
+
+    .slide-header {
+      width: 100%;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--sand);
+      background: var(--cream);
+    }
+
+    .slide-header .brand {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    .counters {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .counter-pill {
+      font-size: 0.85rem;
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      background: var(--sand);
+      color: var(--text-mid);
+      letter-spacing: 0.05em;
+    }
+
+    .slide-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      gap: 2rem;
+    }
+
+    .pose-image-wrap {
+      position: relative;
+      width: min(420px, 90vw);
+      height: min(420px, 60vw);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px var(--shadow);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pose-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    #pose-img.fading { opacity: 0; }
+
+    .pose-placeholder {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .pose-placeholder svg { opacity: 0.35; }
+    .pose-placeholder p { color: var(--text-light); font-size: 0.9rem; }
+
+    .pose-info { text-align: center; }
+
+    .pose-number {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 0.4rem;
+    }
+
+    .pose-name {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .pose-sanskrit {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-style: italic;
+      letter-spacing: 0.05em;
+    }
+
+    .pose-desc {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      margin-top: 0.5rem;
+      max-width: 400px;
+    }
+
+    /* timer ring */
+    .timer-ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-ring {
+      transform: rotate(-90deg);
+    }
+
+    .timer-ring circle.track {
+      stroke: var(--sand);
+      stroke-width: 4;
+      fill: none;
+    }
+
+    .timer-ring circle.progress {
+      stroke: var(--accent);
+      stroke-width: 4;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 157;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.1s linear;
+    }
+
+    /* controls */
+    .slide-controls {
+      display: flex;
+      gap: 1rem;
+      padding: 1.2rem;
+    }
+
+    /* progress bar */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--sand);
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* ── COMPLETION SCREEN ── */
+    #completion {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .lotus {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      animation: bloom 1s ease-out;
+    }
+
+    @keyframes bloom {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    #completion h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: normal;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    #completion .namaste {
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    #completion p {
+      color: var(--text-mid);
+      max-width: 380px;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    #completion-summary {
+      background: var(--cream);
+      border: 1px solid var(--sand);
+      border-radius: 12px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      color: var(--text-mid);
+    }
+
+    /* ── STREAK ── */
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #ff7b00, #ffb347);
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-family: 'Georgia', serif;
+      box-shadow: 0 2px 10px rgba(255, 120, 0, 0.3);
+      cursor: default;
+      user-select: none;
+    }
+
+    .streak-badge .flame { font-size: 1.1rem; }
+    .streak-badge .streak-count { font-weight: bold; font-size: 1rem; }
+    .streak-badge .streak-label { opacity: 0.9; font-size: 0.8rem; }
+
+    /* welcome screen streak — top right corner */
+    .welcome-streak {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* mute button */
+    .mute-btn {
+      background: var(--warm-white);
+      border: 2px solid var(--sand);
+      border-radius: 50px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.85rem;
+      font-family: 'Georgia', serif;
+      color: var(--text-mid);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .mute-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* completion streak card */
+    .streak-card {
+      background: linear-gradient(135deg, #fff4e6, #ffe8c0);
+      border: 2px solid #ffb347;
+      border-radius: 16px;
+      padding: 1.2rem 2.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .streak-card .flame-big { font-size: 2.8rem; animation: flicker 1.5s ease-in-out infinite alternate; }
+
+    @keyframes flicker {
+      from { transform: scaleY(1)   scaleX(1);    opacity: 1; }
+      to   { transform: scaleY(1.08) scaleX(0.96); opacity: 0.9; }
+    }
+
+    .streak-card .streak-num {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #c85a00;
+      line-height: 1;
+    }
+
+    .streak-card .streak-text {
+      font-size: 0.85rem;
+      color: #a0500a;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .streak-card .streak-msg {
+      font-size: 0.9rem;
+      color: #7a4010;
+      margin-top: 0.3rem;
+      font-style: italic;
+    }
+
+    /* week dots */
+    .week-dots {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .week-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .week-dot .dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      border: 2px solid transparent;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .week-dot .dot.active {
+      background: linear-gradient(135deg, #ff7b00, #ffb347);
+      color: white;
+      border-color: #ff7b00;
+    }
+
+    .week-dot .dot.today {
+      border-color: #ff7b00;
+    }
+
+    .week-dot .day-label {
+      font-size: 0.65rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ WELCOME ══════════ -->
+<section id="welcome">
+  <!-- streak badge top-right -->
+  <div class="welcome-streak" id="welcome-streak">
+    <button class="mute-btn" id="mute-btn" onclick="toggleMute()">
+      <span id="mute-icon">🔊</span> Music
+    </button>
+  </div>
+
+  <svg class="sun-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="18" fill="#c8843a" opacity="0.9"/>
+    <g stroke="#c8843a" stroke-width="3" stroke-linecap="round">
+      <line x1="40" y1="4"  x2="40" y2="14"/>
+      <line x1="40" y1="66" x2="40" y2="76"/>
+      <line x1="4"  y1="40" x2="14" y2="40"/>
+      <line x1="66" y1="40" x2="76" y2="40"/>
+      <line x1="12.7" y1="12.7" x2="19.8" y2="19.8"/>
+      <line x1="60.2" y1="60.2" x2="67.3" y2="67.3"/>
+      <line x1="67.3" y1="12.7" x2="60.2" y2="19.8"/>
+      <line x1="19.8" y1="60.2" x2="12.7" y2="67.3"/>
+    </g>
+  </svg>
+
+  <h1>Surya Namaskar</h1>
+  <div class="subtitle">Sun Salutation</div>
+  <div class="divider"></div>
+
+  <p>
+    A sacred sequence of 12 yoga postures performed in a flowing cycle,
+    offered as a salutation to the sun. Each round energises the body,
+    calms the mind, and awakens the spirit.
+  </p>
+
+  <div class="input-group">
+    <label for="rounds-input">Number of rounds</label>
+    <input type="number" id="rounds-input" min="1" max="108" value="3" />
+  </div>
+
+  <div class="input-group">
+    <label>Pace</label>
+    <div class="pace-options">
+      <label class="pace-option selected">
+        <input type="radio" name="pace" value="5000" checked /> <span>Normal</span>
+      </label>
+      <label class="pace-option">
+        <input type="radio" name="pace" value="11000" /> <span>Relaxed</span>
+      </label>
+    </div>
+  </div>
+
+  <span class="error-msg" id="input-error"></span>
+
+  <button class="btn" onclick="startSession()">Begin Practice</button>
+</section>
+
+<!-- ══════════ SLIDESHOW ══════════ -->
+<section id="slideshow">
+  <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+  <div class="slide-header">
+    <span class="brand">Surya Namaskar</span>
+    <div class="counters">
+      <span class="counter-pill" id="round-counter">Round 1</span>
+      <span class="counter-pill" id="pose-counter">Asana 1 / 12</span>
+      <button class="mute-btn" onclick="toggleMute()"><span id="mute-icon-slide">🔊</span> Music</button>
+    </div>
+  </div>
+
+  <div class="slide-main">
+    <div class="pose-image-wrap">
+      <img id="pose-img" src="" alt="Asana pose" />
+      <div class="pose-placeholder" id="pose-placeholder">
+        <!-- inline SVG silhouette shown when image fails -->
+        <svg width="160" height="200" viewBox="0 0 160 200" fill="none">
+          <circle cx="80" cy="22" r="18" fill="#c8843a" opacity="0.3"/>
+          <rect x="62" y="44" width="36" height="70" rx="10" fill="#c8843a" opacity="0.2"/>
+          <rect x="26" y="50" width="30" height="12" rx="6" fill="#c8843a" opacity="0.2"/>
+          <rect x="104" y="50" width="30" height="12" rx="6" fill="#c8843a" opacity="0.2"/>
+          <rect x="62" y="114" width="14" height="60" rx="7" fill="#c8843a" opacity="0.2"/>
+          <rect x="84" y="114" width="14" height="60" rx="7" fill="#c8843a" opacity="0.2"/>
+        </svg>
+        <p id="placeholder-name"></p>
+      </div>
+    </div>
+
+    <div class="pose-info">
+      <div class="pose-number" id="pose-step"></div>
+      <div class="pose-name" id="pose-sanskrit-display"></div>
+      <div class="pose-sanskrit" id="pose-name-display"></div>
+      <div class="pose-desc" id="pose-desc-display"></div>
+    </div>
+
+    <div class="timer-ring-wrap">
+      <svg class="timer-ring" width="54" height="54" viewBox="0 0 54 54">
+        <circle class="track"    cx="27" cy="27" r="25"/>
+        <circle class="progress" id="timer-circle" cx="27" cy="27" r="25"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="slide-controls">
+    <button class="btn btn-outline" id="pause-btn" onclick="togglePause()">Pause</button>
+    <button class="btn btn-outline" onclick="stopSession()">Stop</button>
+  </div>
+</section>
+
+<!-- ══════════ COMPLETION ══════════ -->
+<section id="completion">
+  <div class="lotus">🙏</div>
+  <h2>Namaste</h2>
+  <div class="namaste">Practice Complete</div>
+  <p>You have completed your Surya Namaskar practice.
+     May the light within you shine bright.</p>
+  <div id="streak-card-wrap"></div>
+  <div id="completion-summary"></div>
+  <button class="btn" onclick="resetSession()">Practice Again</button>
+</section>
+
+<script>
+  // ─── POSE DATA ───────────────────────────────────────────────────────────
+  // Each full round = 2 halves: right leg first, then left leg.
+  // Poses 4 & 9 (index 3 & 8) differ between halves.
+  const POSES_RIGHT = [
+    {
+      name: "Prayer Pose",
+      sanskrit: "Pranamasana",
+      desc: "Stand tall at the front of the mat. Bring palms together at the heart centre. Exhale and relax.",
+      img: "images/Surya-Namaskar-step-1.jpg.webp"
+    },
+    {
+      name: "Raised Arms Pose",
+      sanskrit: "Hasta Uttanasana",
+      desc: "Inhale. Sweep the arms up and back, stretching the spine and lifting the ribcage.",
+      img: "images/Surya-Namaskar-step-2.jpg.webp"
+    },
+    {
+      name: "Hand-to-Foot Pose",
+      sanskrit: "Hasta Padasana",
+      desc: "Exhale. Hinge forward from the hips, bringing hands to the floor beside the feet. Step the right leg back next.",
+      img: "images/Surya-Namaskar-step-3.jpg.webp"
+    },
+    {
+      name: "Equestrian Pose (right)",
+      sanskrit: "Ashwa Sanchalanasana",
+      desc: "Inhale. Step the right leg back into a low lunge, fingertips on the mat, gaze forward.",
+      img: "images/Surya-Namaskar-step-4.jpg.webp"
+    },
+    {
+      name: "Plank Pose",
+      sanskrit: "Dandasana",
+      desc: "Retain breath. Step the left foot back to join the right. Hold the body in a straight plank.",
+      img: "images/Surya-Namaskar-step-5.jpg.webp"
+    },
+    {
+      name: "Eight-Limbed Salutation",
+      sanskrit: "Ashtanga Namaskara",
+      desc: "Exhale. Lower knees, chest, and chin to the mat — eight points of contact with the earth.",
+      img: "images/Surya-Namaskar-step-6.jpg.webp"
+    },
+    {
+      name: "Cobra Pose",
+      sanskrit: "Bhujangasana",
+      desc: "Inhale. Press palms into the mat and lift the chest and head, arching the back gently.",
+      img: "images/Surya-Namaskar-step-7.jpg.webp"
+    },
+    {
+      name: "Downward-Facing Dog",
+      sanskrit: "Adho Mukha Svanasana",
+      desc: "Exhale. Lift the hips high, press heels toward the floor. Body forms an inverted V.",
+      img: "images/Surya-Namaskar-step-8.jpg.webp"
+    },
+    {
+      name: "Equestrian Pose (right)",
+      sanskrit: "Ashwa Sanchalanasana",
+      desc: "Inhale. Step the right foot forward between the hands. Right leg forward.",
+      img: "images/Surya-Namaskar-step-9.jpg.webp"
+    },
+    {
+      name: "Hand-to-Foot Pose",
+      sanskrit: "Hasta Padasana",
+      desc: "Exhale. Bring the left foot forward. Straighten the legs and fold the torso forward.",
+      img: "images/Surya-Namaskar-step-10.jpg.webp"
+    },
+    {
+      name: "Raised Arms Pose",
+      sanskrit: "Hasta Uttanasana",
+      desc: "Inhale. Rise up, sweeping the arms out and overhead, gentle backbend.",
+      img: "images/Surya-Namaskar-step-11.jpg.webp"
+    },
+    {
+      name: "Mountain Pose",
+      sanskrit: "Tadasana / Pranamasana",
+      desc: "Exhale. Return to standing. Bring palms together at the heart. First half complete.",
+      img: "images/Surya-Namaskar-step-12.jpg.webp"
+    }
+  ];
+
+  const POSES_LEFT = [
+    {
+      name: "Prayer Pose",
+      sanskrit: "Pranamasana",
+      desc: "Stand tall at the front of the mat. Bring palms together at the heart centre. Exhale and relax.",
+      img: "images/Surya-Namaskar-step-1.jpg.webp"
+    },
+    {
+      name: "Raised Arms Pose",
+      sanskrit: "Hasta Uttanasana",
+      desc: "Inhale. Sweep the arms up and back, stretching the spine and lifting the ribcage.",
+      img: "images/Surya-Namaskar-step-2.jpg.webp"
+    },
+    {
+      name: "Hand-to-Foot Pose",
+      sanskrit: "Hasta Padasana",
+      desc: "Exhale. Hinge forward from the hips, bringing hands to the floor beside the feet. Step the left leg back next.",
+      img: "images/Surya-Namaskar-step-3.jpg.webp"
+    },
+    {
+      name: "Equestrian Pose (left)",
+      sanskrit: "Ashwa Sanchalanasana",
+      desc: "Inhale. Step the left leg back into a low lunge, fingertips on the mat, gaze forward.",
+      img: "images/Surya-Namaskar-step-4.jpg.webp"
+    },
+    {
+      name: "Plank Pose",
+      sanskrit: "Dandasana",
+      desc: "Retain breath. Step the right foot back to join the left. Hold the body in a straight plank.",
+      img: "images/Surya-Namaskar-step-5.jpg.webp"
+    },
+    {
+      name: "Eight-Limbed Salutation",
+      sanskrit: "Ashtanga Namaskara",
+      desc: "Exhale. Lower knees, chest, and chin to the mat — eight points of contact with the earth.",
+      img: "images/Surya-Namaskar-step-6.jpg.webp"
+    },
+    {
+      name: "Cobra Pose",
+      sanskrit: "Bhujangasana",
+      desc: "Inhale. Press palms into the mat and lift the chest and head, arching the back gently.",
+      img: "images/Surya-Namaskar-step-7.jpg.webp"
+    },
+    {
+      name: "Downward-Facing Dog",
+      sanskrit: "Adho Mukha Svanasana",
+      desc: "Exhale. Lift the hips high, press heels toward the floor. Body forms an inverted V.",
+      img: "images/Surya-Namaskar-step-8.jpg.webp"
+    },
+    {
+      name: "Equestrian Pose (left)",
+      sanskrit: "Ashwa Sanchalanasana",
+      desc: "Inhale. Step the left foot forward between the hands. Left leg forward.",
+      img: "images/Surya-Namaskar-step-9.jpg.webp"
+    },
+    {
+      name: "Hand-to-Foot Pose",
+      sanskrit: "Hasta Padasana",
+      desc: "Exhale. Bring the right foot forward. Straighten the legs and fold the torso forward.",
+      img: "images/Surya-Namaskar-step-10.jpg.webp"
+    },
+    {
+      name: "Raised Arms Pose",
+      sanskrit: "Hasta Uttanasana",
+      desc: "Inhale. Rise up, sweeping the arms out and overhead, gentle backbend.",
+      img: "images/Surya-Namaskar-step-11.jpg.webp"
+    },
+    {
+      name: "Mountain Pose",
+      sanskrit: "Tadasana / Pranamasana",
+      desc: "Exhale. Return to standing. Bring palms together at the heart. One full round complete.",
+      img: "images/Surya-Namaskar-step-12.jpg.webp"
+    }
+  ];
+
+  // ─── STATE ────────────────────────────────────────────────────────────────
+  let totalRounds   = 1;
+  let currentRound  = 1;   // 1-based full round (right+left = 1 round)
+  let currentHalf   = 1;   // 1 = right leg, 2 = left leg
+  let currentPose   = 0;   // 0–11 within a half
+  let slideIndex    = 0;   // global slide index (0 to totalSlides-1)
+  let totalSlides   = 0;   // rounds * 24
+  let intervalId    = null;
+  let isPaused      = false;
+  let tickMs        = 3000;
+  let timerStart    = null;
+  let timerRafId    = null;
+
+  const CIRCUMFERENCE = 2 * Math.PI * 25; // r=25
+
+  // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
+  const bgMusic = new Audio('sounds/background.mp3');
+  bgMusic.loop   = true;
+  bgMusic.volume = 0.15;  // soft — well below voice instructions
+  let bgMuted = false;
+  let bgStarted = false;
+
+  function startBgMusic() {
+    if (bgStarted) return;
+    bgStarted = true;
+    bgMusic.play().catch(() => {});
+  }
+
+  function toggleMute() {
+    bgMuted = !bgMuted;
+    bgMusic.muted = bgMuted;
+    const icon = bgMuted ? '🔇' : '🔊';
+    document.getElementById('mute-icon').textContent      = icon;
+    document.getElementById('mute-icon-slide').textContent = icon;
+  }
+
+  // unlock & start on first interaction
+  document.addEventListener('click', startBgMusic, { once: true });
+
+  // ─── AUDIO ───────────────────────────────────────────────────────────────
+  const SOUNDS_RIGHT = [
+    "sounds/step-1-pranamasana.m4a",
+    "sounds/step-2-11-hasta-uttanasana.m4a",
+    "sounds/step-3-10-hasta-padasana.m4a",
+    "sounds/step-4-ashwa-sanchalanasana-right.m4a",
+    "sounds/step-5-dandasana.m4a",
+    "sounds/step-6-ashtanga-namaskara.m4a",
+    "sounds/step-7-bhujangasana.m4a",
+    "sounds/step-8-adho-mukha-svanasana.m4a",
+    "sounds/step-9-ashwa-sanchalanasana-right-forward.m4a",
+    "sounds/step-3-10-hasta-padasana.m4a",
+    "sounds/step-2-11-hasta-uttanasana.m4a",
+    "sounds/step-12-tadasana.mp4"
+  ];
+
+  const SOUNDS_LEFT = [
+    "sounds/step-1-pranamasana.m4a",
+    "sounds/step-2-11-hasta-uttanasana.m4a",
+    "sounds/step-3-10-hasta-padasana.m4a",
+    "sounds/step-4-ashwa-sanchalanasana-left.m4a",
+    "sounds/step-5-dandasana.m4a",
+    "sounds/step-6-ashtanga-namaskara.m4a",
+    "sounds/step-7-bhujangasana.m4a",
+    "sounds/step-8-adho-mukha-svanasana.m4a",
+    "sounds/step-9-ashwa-sanchalanasana-left-forward.m4a",
+    "sounds/step-3-10-hasta-padasana.m4a",
+    "sounds/step-2-11-hasta-uttanasana.m4a",
+    "sounds/step-12-tadasana.mp4"
+  ];
+
+  let audioUnlocked = false;
+  let currentAudio = null;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    const silent = new Audio("sounds/step-1-pranamasana.m4a");
+    silent.volume = 0;
+    silent.play().then(() => { silent.pause(); audioUnlocked = true; }).catch(() => {});
+  }
+
+  function playPoseAudio(poseIdx) {
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    const src = currentHalf === 1 ? SOUNDS_RIGHT[poseIdx] : SOUNDS_LEFT[poseIdx];
+    currentAudio = new Audio(src);
+    currentAudio.play().catch(() => {});
+  }
+
+  // ─── HELPERS ─────────────────────────────────────────────────────────────
+  function show(id) { document.getElementById(id).style.display = 'flex'; }
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+
+  function showPose(poseIdx) {
+    const poses = currentHalf === 1 ? POSES_RIGHT : POSES_LEFT;
+    const pose  = poses[poseIdx];
+    const img    = document.getElementById('pose-img');
+    const phWrap = document.getElementById('pose-placeholder');
+    const phName = document.getElementById('placeholder-name');
+
+    img.classList.add('fading');
+
+    setTimeout(() => {
+      img.src = pose.img;
+      img.alt = pose.name;
+      document.getElementById('pose-name-display').textContent     = pose.name;
+      document.getElementById('pose-sanskrit-display').textContent = pose.sanskrit;
+      document.getElementById('pose-desc-display').textContent     = pose.desc;
+      document.getElementById('pose-step').textContent =
+        `Asana ${poseIdx + 1} of 12`;
+      phName.textContent = pose.name;
+
+        const shouldFlip = currentHalf === 2 && (poseIdx === 3 || poseIdx === 8);
+      img.style.transform = shouldFlip ? 'scaleX(-1)' : '';
+      img.onload  = () => { img.classList.remove('fading'); phWrap.style.display = 'none'; img.style.display = 'block'; };
+      img.onerror = () => { img.classList.remove('fading'); img.style.display = 'none'; phWrap.style.display = 'flex'; };
+      img.classList.remove('fading');
+    }, 400);
+
+    document.getElementById('round-counter').textContent =
+      `Round ${currentRound} / ${totalRounds}`;
+    document.getElementById('pose-counter').textContent =
+      `Asana ${poseIdx + 1} / 12 · ${currentHalf === 1 ? 'Right' : 'Left'}`;
+
+    document.getElementById('progress-bar').style.width =
+      `${(slideIndex / totalSlides) * 100}%`;
+
+    startTimerRing(tickMs);
+    playPoseAudio(poseIdx);
+  }
+
+  // Animated SVG ring that empties over duration ms
+  function startTimerRing(duration) {
+    cancelAnimationFrame(timerRafId);
+    timerStart = performance.now();
+    const circle = document.getElementById('timer-circle');
+
+    function tick(now) {
+      const elapsed  = now - timerStart;
+      const fraction = Math.min(elapsed / duration, 1);
+      circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - fraction);
+      if (fraction < 1) timerRafId = requestAnimationFrame(tick);
+    }
+    circle.style.strokeDashoffset = CIRCUMFERENCE;
+    timerRafId = requestAnimationFrame(tick);
+  }
+
+  // ─── SESSION CONTROL ─────────────────────────────────────────────────────
+  function startSession() {
+    unlockAudio();
+    const val = parseInt(document.getElementById('rounds-input').value, 10);
+    const err = document.getElementById('input-error');
+
+    if (!val || val < 1 || val > 108) {
+      err.textContent = 'Please enter a number between 1 and 108.';
+      return;
+    }
+    err.textContent = '';
+
+    const selectedPace = document.querySelector('input[name="pace"]:checked');
+    tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 3000;
+
+    totalRounds  = val;
+    totalSlides  = totalRounds * 24;  // 12 right + 12 left per round
+    currentRound = 1;
+    currentHalf  = 1;
+    currentPose  = 0;
+    slideIndex   = 0;
+
+    hide('welcome');
+    show('slideshow');
+
+    showPose(currentPose);
+    scheduleNext();
+  }
+
+  function scheduleNext() {
+    intervalId = setTimeout(advance, tickMs);
+  }
+
+  function advance() {
+    slideIndex++;
+
+    if (slideIndex >= totalSlides) {
+      endSession();
+      return;
+    }
+
+    // Each round = 24 slides. Within a round, first 12 = right, next 12 = left.
+    const posInRound = slideIndex % 24;
+    currentHalf  = posInRound < 12 ? 1 : 2;
+    currentPose  = posInRound % 12;
+    currentRound = Math.floor(slideIndex / 24) + 1;
+
+    showPose(currentPose);
+    if (!isPaused) scheduleNext();
+  }
+
+  function togglePause() {
+    const btn = document.getElementById('pause-btn');
+    if (isPaused) {
+      isPaused = false;
+      btn.textContent = 'Pause';
+      if (currentAudio) currentAudio.play().catch(() => {});
+      startTimerRing(tickMs);
+      scheduleNext();
+    } else {
+      isPaused = true;
+      btn.textContent = 'Resume';
+      clearTimeout(intervalId);
+      cancelAnimationFrame(timerRafId);
+      if (currentAudio) currentAudio.pause();
+    }
+  }
+
+  function stopSession() {
+    clearTimeout(intervalId);
+    cancelAnimationFrame(timerRafId);
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    hide('slideshow');
+    show('welcome');
+    isPaused = false;
+    document.getElementById('pause-btn').textContent = 'Pause';
+  }
+
+  function endSession() {
+    clearTimeout(intervalId);
+    cancelAnimationFrame(timerRafId);
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    document.getElementById('progress-bar').style.width = '100%';
+
+    const totalAsanas = totalRounds * 24;
+    document.getElementById('completion-summary').innerHTML =
+      `You completed <strong>${totalRounds} round${totalRounds > 1 ? 's' : ''}</strong> —
+       <strong>${totalAsanas} asanas</strong> in total.`;
+
+    // record streak before rendering
+    recordPractice();
+    const { streak, history } = loadStreak();
+    renderCompletionStreak(streak, history);
+
+    hide('slideshow');
+    show('completion');
+    isPaused = false;
+    document.getElementById('pause-btn').textContent = 'Pause';
+  }
+
+  function resetSession() {
+    hide('completion');
+    show('welcome');
+    document.getElementById('progress-bar').style.width = '0%';
+    renderWelcomeStreak();
+  }
+
+  // Allow Enter key on rounds input
+  document.getElementById('rounds-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startSession();
+  });
+
+  // ─── STREAK ──────────────────────────────────────────────────────────────
+  const STREAK_KEY      = 'sn_streak_count';
+  const LAST_DATE_KEY   = 'sn_last_date';
+  const HISTORY_KEY     = 'sn_history'; // array of ISO date strings
+
+  function todayISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function loadStreak() {
+    const streak    = parseInt(localStorage.getItem(STREAK_KEY)  || '0', 10);
+    const lastDate  = localStorage.getItem(LAST_DATE_KEY) || '';
+    const history   = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    return { streak, lastDate, history };
+  }
+
+  function recordPractice() {
+    const today = todayISO();
+    let { streak, lastDate, history } = loadStreak();
+
+    if (lastDate === today) return; // already practiced today, no change
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayISO = yesterday.toISOString().slice(0, 10);
+
+    streak = (lastDate === yesterdayISO) ? streak + 1 : 1;
+    lastDate = today;
+
+    if (!history.includes(today)) history.push(today);
+    // keep only last 365 days
+    if (history.length > 365) history = history.slice(-365);
+
+    localStorage.setItem(STREAK_KEY,    streak);
+    localStorage.setItem(LAST_DATE_KEY, lastDate);
+    localStorage.setItem(HISTORY_KEY,   JSON.stringify(history));
+
+    return streak;
+  }
+
+  function streakMessage(n) {
+    if (n === 1)  return 'Great start! Come back tomorrow.';
+    if (n < 4)    return 'You\'re building momentum!';
+    if (n < 7)    return 'Keep the fire burning!';
+    if (n < 14)   return 'One week strong — incredible!';
+    if (n < 30)   return 'You\'re unstoppable!';
+    return '🌟 Legendary dedication!';
+  }
+
+  function buildWeekDots(history) {
+    const days = ['S','M','T','W','T','F','S'];
+    const today = new Date();
+    let html = '<div class="week-dots">';
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const iso     = d.toISOString().slice(0, 10);
+      const dayName = days[d.getDay()];
+      const done    = history.includes(iso);
+      const isToday = i === 0;
+      html += `<div class="week-dot">
+        <div class="dot ${done ? 'active' : ''} ${isToday && !done ? 'today' : ''}">${done ? '🔥' : ''}</div>
+        <span class="day-label">${dayName}</span>
+      </div>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderWelcomeStreak() {
+    const { streak } = loadStreak();
+    const el = document.getElementById('welcome-streak');
+    const icon = bgMuted ? '🔇' : '🔊';
+    const muteHtml = `<button class="mute-btn" id="mute-btn" onclick="toggleMute()"><span id="mute-icon">${icon}</span> Music</button>`;
+    if (streak < 1) { el.innerHTML = muteHtml; return; }
+    el.innerHTML = `<div class="streak-badge">
+      <span class="flame">🔥</span>
+      <span class="streak-count">${streak}</span>
+      <span class="streak-label">day streak</span>
+    </div>${muteHtml}`;
+  }
+
+  function renderCompletionStreak(newStreak, history) {
+    const wrap = document.getElementById('streak-card-wrap');
+    wrap.innerHTML = `<div class="streak-card">
+      <div class="flame-big">🔥</div>
+      <div class="streak-num">${newStreak}</div>
+      <div class="streak-text">Day Streak</div>
+      <div class="streak-msg">${streakMessage(newStreak)}</div>
+      ${buildWeekDots(history)}
+    </div>`;
+  }
+
+  // init welcome streak on load
+  renderWelcomeStreak();
+
+  // keep pace options mutually exclusive
+  document.querySelectorAll('input[name="pace"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('.pace-option').forEach(el => el.classList.remove('selected'));
+      radio.closest('.pace-option').classList.add('selected');
+    });
+  });
+</script>
+</body>
+</html>
