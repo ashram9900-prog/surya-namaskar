@@ -61,7 +61,7 @@
       justify-content: center;
       min-height: 100vh;
       width: 100%;
-      padding: 2rem;
+      padding: 4rem 1.5rem 2rem;
       text-align: center;
     }
 
@@ -225,16 +225,18 @@
 
     .slide-header {
       width: 100%;
-      padding: 1.2rem 2rem;
+      padding: 0.8rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--sand);
       background: var(--cream);
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .slide-header .brand {
-      font-size: 1rem;
+      font-size: 0.9rem;
       letter-spacing: 0.1em;
       color: var(--text-light);
       text-transform: uppercase;
@@ -242,16 +244,19 @@
 
     .counters {
       display: flex;
-      gap: 1.5rem;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .counter-pill {
-      font-size: 0.85rem;
-      padding: 0.3rem 0.9rem;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
       border-radius: 20px;
       background: var(--sand);
       color: var(--text-mid);
       letter-spacing: 0.05em;
+      white-space: nowrap;
     }
 
     .slide-main {
@@ -260,8 +265,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
-      gap: 2rem;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .slide-header .brand { display: none; }
+
+      .input-group input { font-size: 1.3rem; }
+
+      .pace-options { gap: 0.5rem; }
+      .pace-option { padding: 0.5rem 0.8rem; }
+
+      .pose-image-wrap {
+        width: min(320px, 88vw);
+        height: min(320px, 55vw);
+      }
+
+      .pose-name { font-size: 1.2rem; }
+      .pose-desc { font-size: 0.82rem; }
+
+      .slide-controls { gap: 0.6rem; padding: 0.8rem; }
+      .btn { padding: 0.7rem 1.8rem; font-size: 0.9rem; }
     }
 
     .pose-image-wrap {
@@ -862,7 +887,7 @@
   // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
   const bgMusic = new Audio('sounds/background.mp3');
   bgMusic.loop   = true;
-  bgMusic.volume = 0.15;  // soft — well below voice instructions
+  bgMusic.volume = 0.05;  // soft — well below voice instructions
   let bgMuted = false;
   let bgStarted = false;
 
