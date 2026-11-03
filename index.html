@@ -1134,6 +1134,7 @@
   function endSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
+    bgMusic.pause(); bgMusic.currentTime = 0; bgStarted = false;
     document.getElementById('progress-bar').style.width = '100%';
 
     const totalAsanas = totalRounds * 24;
