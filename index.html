@@ -657,6 +657,8 @@
   </div>
 
   <div class="slide-controls">
+    <!-- hidden audio element reused for all pose instructions -->
+    <audio id="pose-audio" preload="auto"></audio>
     <button class="btn btn-outline" id="pause-btn" onclick="togglePause()">Pause</button>
     <button class="btn btn-outline" onclick="stopSession()">Stop</button>
   </div>
@@ -899,36 +901,30 @@
   ];
 
   let audioUnlocked = false;
-  let currentAudio = null;
-  let preloadedAudio = {};
+  const poseAudioEl = document.getElementById('pose-audio');
 
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
 
-    // Pre-load every audio file during the gesture so iOS allows playback later
-    const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
-    allSounds.forEach(src => {
-      const a = new Audio(src);
-      a.load();
-      preloadedAudio[src] = a;
-    });
-
-    // Silently play one to fully unlock the audio context on iOS
-    const silent = preloadedAudio[SOUNDS_RIGHT[0]];
-    silent.volume = 0;
-    silent.play().then(() => { silent.pause(); silent.currentTime = 0; silent.volume = 1; }).catch(() => {});
+    // Unlock the single DOM audio element during the gesture
+    poseAudioEl.src = SOUNDS_RIGHT[0];
+    poseAudioEl.volume = 0;
+    poseAudioEl.play().then(() => {
+      poseAudioEl.pause();
+      poseAudioEl.currentTime = 0;
+      poseAudioEl.volume = 1;
+    }).catch(() => {});
 
     // Start background music in the same gesture
     startBgMusic();
   }
 
   function playPoseAudio(poseIdx) {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
     const src = currentHalf === 1 ? SOUNDS_RIGHT[poseIdx] : SOUNDS_LEFT[poseIdx];
-    currentAudio = preloadedAudio[src] || new Audio(src);
-    currentAudio.currentTime = 0;
-    currentAudio.play().catch(() => {});
+    poseAudioEl.src = src;
+    poseAudioEl.load();
+    poseAudioEl.play().catch(() => {});
   }
 
   // ─── HELPERS ─────────────────────────────────────────────────────────────
@@ -1045,7 +1041,7 @@
     if (isPaused) {
       isPaused = false;
       btn.textContent = 'Pause';
-      if (currentAudio) currentAudio.play().catch(() => {});
+      poseAudioEl.play().catch(() => {});
       startTimerRing(tickMs);
       scheduleNext();
     } else {
@@ -1053,14 +1049,14 @@
       btn.textContent = 'Resume';
       clearTimeout(intervalId);
       cancelAnimationFrame(timerRafId);
-      if (currentAudio) currentAudio.pause();
+      poseAudioEl.pause();
     }
   }
 
   function stopSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    poseAudioEl.pause(); poseAudioEl.currentTime = 0;
     bgMusic.pause(); bgMusic.currentTime = 0; bgStarted = false;
     hide('slideshow');
     show('welcome');
@@ -1071,7 +1067,7 @@
   function endSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    poseAudioEl.pause(); poseAudioEl.currentTime = 0;
     document.getElementById('progress-bar').style.width = '100%';
 
     const totalAsanas = totalRounds * 24;
