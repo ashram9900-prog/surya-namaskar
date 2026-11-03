@@ -1294,6 +1294,27 @@
       radio.closest('.pace-option').classList.add('selected');
     });
   });
+
+  // Pause everything when app goes to background, resume when it returns
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      // App went to background
+      bgMusic.pause();
+      if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
+      if (!isPaused && intervalId) {
+        clearTimeout(intervalId);
+        cancelAnimationFrame(timerRafId);
+      }
+    } else {
+      // App came back to foreground
+      if (bgStarted && !bgMuted) bgMusic.play().catch(() => {});
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (!isPaused && slideIndex < totalSlides && document.getElementById('slideshow').style.display !== 'none') {
+        startTimerRing(tickMs);
+        scheduleNext();
+      }
+    }
+  });
 </script>
 </body>
 </html>
