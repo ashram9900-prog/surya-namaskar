@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Surya Namaskar — Sun Salutation</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c8843a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Surya Namaskar" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
     :root {
       --cream: #fdf6ec;
@@ -1172,6 +1180,11 @@
 
   // init welcome streak on load
   renderWelcomeStreak();
+
+  // register service worker for PWA / offline
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
 
   // keep pace options mutually exclusive
   document.querySelectorAll('input[name="pace"]').forEach(radio => {
