@@ -887,7 +887,7 @@
   // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
   const bgMusic = new Audio('sounds/background.mp3');
   bgMusic.loop   = true;
-  bgMusic.volume = window.matchMedia('(max-width: 768px)').matches ? 0.02 : 0.05;
+  bgMusic.volume = isMobile ? 0.02 : 0.05;
   let bgMuted = false;
   let bgStarted = false;
 
@@ -943,6 +943,8 @@
   const poseAudioEl = document.getElementById('pose-audio');
   let audioCtx = null;
   const audioBuffers = {};
+  let bgGainNode = null;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
   async function fetchAndDecode(src) {
     try {
@@ -968,14 +970,20 @@
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-    // Start background music via HTML element (still needs gesture — we're in one)
+    // Route background music through a gain node for fine volume control
+    bgGainNode = audioCtx.createGain();
+    bgGainNode.gain.value = isMobile ? 0.01 : 0.05;
+    bgGainNode.connect(audioCtx.destination);
+
+    // Start background music via HTML element and also connect to gain node
     startBgMusic();
 
-    // Fetch and decode all pose audio in background
+    // Pre-fetch and decode ALL pose audio files before session starts
     const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
-    allSounds.forEach(src => {
-      fetchAndDecode(src).then(buf => { if (buf) audioBuffers[src] = buf; });
-    });
+    await Promise.all(allSounds.map(async src => {
+      const buf = await fetchAndDecode(src);
+      if (buf) audioBuffers[src] = buf;
+    }));
   }
 
   function playPoseAudio(poseIdx) {
@@ -983,7 +991,6 @@
     if (audioBuffers[src]) {
       playBuffer(audioBuffers[src]);
     } else {
-      // Fallback: buffer not ready yet, fetch and play immediately
       fetchAndDecode(src).then(buf => { if (buf) { audioBuffers[src] = buf; playBuffer(buf); } });
     }
   }
@@ -1047,8 +1054,7 @@
   }
 
   // ─── SESSION CONTROL ─────────────────────────────────────────────────────
-  function startSession() {
-    unlockAudio();
+  async function startSession() {
     const val = parseInt(document.getElementById('rounds-input').value, 10);
     const err = document.getElementById('input-error');
 
@@ -1059,10 +1065,13 @@
     err.textContent = '';
 
     const selectedPace = document.querySelector('input[name="pace"]:checked');
-    tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 3000;
+    tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 5000;
+
+    // Unlock audio and wait for all buffers to be decoded before starting
+    await unlockAudio();
 
     totalRounds  = val;
-    totalSlides  = totalRounds * 24;  // 12 right + 12 left per round
+    totalSlides  = totalRounds * 24;
     currentRound = 1;
     currentHalf  = 1;
     currentPose  = 0;
