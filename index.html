@@ -941,31 +941,51 @@
 
   let audioUnlocked = false;
   const poseAudioEl = document.getElementById('pose-audio');
+  let audioCtx = null;
+  const audioBuffers = {};
 
-  function unlockAudio() {
+  async function fetchAndDecode(src) {
+    try {
+      const res = await fetch(src);
+      const buf = await res.arrayBuffer();
+      return await audioCtx.decodeAudioData(buf);
+    } catch(e) { return null; }
+  }
+
+  function playBuffer(buffer) {
+    if (!buffer || !audioCtx) return;
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioCtx.destination);
+    source.start(0);
+  }
+
+  async function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
 
-    // Unlock the single DOM audio element during the gesture
-    poseAudioEl.src = SOUNDS_RIGHT[0];
-    poseAudioEl.volume = 0;
-    poseAudioEl.play().then(() => {
-      poseAudioEl.pause();
-      poseAudioEl.currentTime = 0;
-      poseAudioEl.volume = 1;
-    }).catch(() => {});
+    // Create AudioContext during the gesture — this is the iOS unlock
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-    // Start background music in the same gesture
+    // Start background music via HTML element (still needs gesture — we're in one)
     startBgMusic();
+
+    // Fetch and decode all pose audio in background
+    const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
+    allSounds.forEach(src => {
+      fetchAndDecode(src).then(buf => { if (buf) audioBuffers[src] = buf; });
+    });
   }
 
   function playPoseAudio(poseIdx) {
     const src = currentHalf === 1 ? SOUNDS_RIGHT[poseIdx] : SOUNDS_LEFT[poseIdx];
-    poseAudioEl.pause();
-    poseAudioEl.src = src;
-    const tryPlay = () => poseAudioEl.play().catch(() => {});
-    poseAudioEl.addEventListener('canplaythrough', tryPlay, { once: true });
-    poseAudioEl.load();
+    if (audioBuffers[src]) {
+      playBuffer(audioBuffers[src]);
+    } else {
+      // Fallback: buffer not ready yet, fetch and play immediately
+      fetchAndDecode(src).then(buf => { if (buf) { audioBuffers[src] = buf; playBuffer(buf); } });
+    }
   }
 
   // ─── HELPERS ─────────────────────────────────────────────────────────────
@@ -1082,7 +1102,6 @@
     if (isPaused) {
       isPaused = false;
       btn.textContent = 'Pause';
-      poseAudioEl.play().catch(() => {});
       startTimerRing(tickMs);
       scheduleNext();
     } else {
@@ -1090,14 +1109,12 @@
       btn.textContent = 'Resume';
       clearTimeout(intervalId);
       cancelAnimationFrame(timerRafId);
-      poseAudioEl.pause();
     }
   }
 
   function stopSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    poseAudioEl.pause(); poseAudioEl.currentTime = 0;
     bgMusic.pause(); bgMusic.currentTime = 0; bgStarted = false;
     hide('slideshow');
     show('welcome');
@@ -1108,7 +1125,6 @@
   function endSession() {
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
-    poseAudioEl.pause(); poseAudioEl.currentTime = 0;
     document.getElementById('progress-bar').style.width = '100%';
 
     const totalAsanas = totalRounds * 24;
