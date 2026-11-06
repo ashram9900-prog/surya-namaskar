@@ -971,7 +971,10 @@
 
   async function fetchAndDecode(src) {
     try {
-      const res = await fetch(src);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(src, { signal: controller.signal });
+      clearTimeout(timeout);
       const buf = await res.arrayBuffer();
       return await audioCtx.decodeAudioData(buf);
     } catch(e) { return null; }
@@ -995,9 +998,16 @@
 
     startBgMusic();
 
-    // Load audio in background — don't block session start
-    const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
-    allSounds.forEach(src => {
+    // Preload first 5 pose sounds so they're ready immediately
+    const firstSounds = SOUNDS_RIGHT.slice(0, 5);
+    await Promise.all(firstSounds.map(async src => {
+      const buf = await fetchAndDecode(src);
+      if (buf) audioBuffers[src] = buf;
+    }));
+
+    // Load the rest in background
+    const remaining = [...new Set([...SOUNDS_RIGHT.slice(5), ...SOUNDS_LEFT])];
+    remaining.forEach(src => {
       fetchAndDecode(src).then(buf => { if (buf) audioBuffers[src] = buf; });
     });
   }
@@ -1084,10 +1094,12 @@
     tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 5000;
 
     const btn = document.querySelector('button.btn:not(.btn-outline)');
+    btn.textContent = 'Loading audio…';
     btn.disabled = true;
 
     await unlockAudio();
 
+    btn.textContent = 'Begin Practice';
     btn.disabled = false;
 
     totalRounds  = val;
