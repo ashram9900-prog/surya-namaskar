@@ -883,10 +883,12 @@
 
   const CIRCUMFERENCE = 2 * Math.PI * 25; // r=25
 
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
   // ─── BACKGROUND MUSIC ────────────────────────────────────────────────────
   const bgMusic = new Audio('sounds/background.mp3');
   bgMusic.loop   = true;
-    bgMusic.volume = isMobile ? 0.02 : 0.05;
+  bgMusic.volume = isMobile ? 0.02 : 0.05;
   let bgMuted = false;
   let bgStarted = false;
 
@@ -958,7 +960,6 @@
   let audioCtx = null;
   const audioBuffers = {};
   let poseGainNode = null;
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
   function createAudioContext() {
     if (audioCtx) return;
@@ -994,11 +995,11 @@
 
     startBgMusic();
 
+    // Load audio in background — don't block session start
     const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
-    await Promise.all(allSounds.map(async src => {
-      const buf = await fetchAndDecode(src);
-      if (buf) audioBuffers[src] = buf;
-    }));
+    allSounds.forEach(src => {
+      fetchAndDecode(src).then(buf => { if (buf) audioBuffers[src] = buf; });
+    });
   }
 
   function playPoseAudio(poseIdx) {
@@ -1083,12 +1084,10 @@
     tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 5000;
 
     const btn = document.querySelector('button.btn:not(.btn-outline)');
-    btn.textContent = 'Loading audio…';
     btn.disabled = true;
 
     await unlockAudio();
 
-    btn.textContent = 'Begin Practice';
     btn.disabled = false;
 
     totalRounds  = val;
