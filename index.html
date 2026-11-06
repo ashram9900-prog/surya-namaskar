@@ -487,6 +487,10 @@
 
     .mute-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+    @media (max-width: 768px) {
+      .mute-btn { display: none; }
+    }
+
     /* completion streak card */
     .streak-card {
       background: linear-gradient(135deg, #fff4e6, #ffe8c0);
