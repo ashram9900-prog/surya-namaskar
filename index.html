@@ -596,6 +596,32 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+
+    .data-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .btn-small {
+      padding: 0.45rem 1rem;
+      font-size: 0.78rem;
+      font-family: 'Georgia', serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 50px;
+      cursor: pointer;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-small:hover { background: var(--accent); color: white; }
+
+    #import-file { display: none; }
   </style>
 </head>
 <body>
@@ -653,6 +679,12 @@
   <span class="error-msg" id="input-error"></span>
 
   <button class="btn" onclick="startSession()">Begin Practice</button>
+
+  <div class="data-actions" style="margin-top:1.2rem">
+    <button class="btn-small" onclick="exportStreak()">Export Streak</button>
+    <button class="btn-small" onclick="document.getElementById('import-file').click()">Import Streak</button>
+    <input type="file" id="import-file" accept=".json" onchange="importStreak(event)" />
+  </div>
 </section>
 
 <!-- ══════════ SLIDESHOW ══════════ -->
@@ -714,6 +746,9 @@
   <div id="streak-card-wrap"></div>
   <div id="completion-summary"></div>
   <button class="btn" onclick="resetSession()">Practice Again</button>
+  <div class="data-actions">
+    <button class="btn-small" onclick="exportStreak()">Export Streak</button>
+  </div>
 </section>
 
 <script>
@@ -1305,6 +1340,41 @@
       }
     }
   });
+
+  // ─── EXPORT / IMPORT STREAK ──────────────────────────────────────────────
+  function exportStreak() {
+    const data = {
+      [STREAK_KEY]:    localStorage.getItem(STREAK_KEY)  || '0',
+      [LAST_DATE_KEY]: localStorage.getItem(LAST_DATE_KEY) || '',
+      [HISTORY_KEY]:   localStorage.getItem(HISTORY_KEY)  || '[]'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'surya-namaskar-streak.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importStreak(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data[STREAK_KEY])    localStorage.setItem(STREAK_KEY,    data[STREAK_KEY]);
+        if (data[LAST_DATE_KEY]) localStorage.setItem(LAST_DATE_KEY, data[LAST_DATE_KEY]);
+        if (data[HISTORY_KEY])   localStorage.setItem(HISTORY_KEY,   data[HISTORY_KEY]);
+        renderWelcomeStreak();
+        alert('Streak imported successfully!');
+      } catch {
+        alert('Invalid file. Please use a previously exported streak file.');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
 </script>
 </body>
 </html>
