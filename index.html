@@ -12,20 +12,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Surya Namaskar" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-
-  <!-- Preload all audio so it's ready before the session starts -->
-  <link rel="preload" href="sounds/step-1-pranamasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-2-11-hasta-uttanasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-3-10-hasta-padasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-4-ashwa-sanchalanasana-right.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-4-ashwa-sanchalanasana-left.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-5-dandasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-6-ashtanga-namaskara.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-7-bhujangasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-8-adho-mukha-svanasana.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-9-ashwa-sanchalanasana-right-forward.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-9-ashwa-sanchalanasana-left-forward.m4a" as="audio" />
-  <link rel="preload" href="sounds/step-12-tadasana.mp4" as="audio" />
   <style>
     :root {
       --cream: #fdf6ec;
@@ -999,22 +985,12 @@
   async function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
-
     createAudioContext();
     if (audioCtx.state === 'suspended') audioCtx.resume();
-
     startBgMusic();
-
-    // Preload first 5 pose sounds so they're ready immediately
-    const firstSounds = SOUNDS_RIGHT.slice(0, 5);
-    await Promise.all(firstSounds.map(async src => {
-      const buf = await fetchAndDecode(src);
-      if (buf) audioBuffers[src] = buf;
-    }));
-
-    // Load the rest in background
-    const remaining = [...new Set([...SOUNDS_RIGHT.slice(5), ...SOUNDS_LEFT])];
-    remaining.forEach(src => {
+    // Load all sounds in background — never blocks the session
+    const allSounds = [...new Set([...SOUNDS_RIGHT, ...SOUNDS_LEFT])];
+    allSounds.forEach(src => {
       fetchAndDecode(src).then(buf => { if (buf) audioBuffers[src] = buf; });
     });
   }
