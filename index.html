@@ -1080,7 +1080,7 @@
   }
 
   // ─── SESSION CONTROL ─────────────────────────────────────────────────────
-  async function startSession() {
+  function startSession() {
     const val = parseInt(document.getElementById('rounds-input').value, 10);
     const err = document.getElementById('input-error');
 
@@ -1093,14 +1093,7 @@
     const selectedPace = document.querySelector('input[name="pace"]:checked');
     tickMs = selectedPace ? parseInt(selectedPace.value, 10) : 5000;
 
-    const btn = document.querySelector('button.btn:not(.btn-outline)');
-    btn.textContent = 'Loading audio…';
-    btn.disabled = true;
-
-    await unlockAudio();
-
-    btn.textContent = 'Begin Practice';
-    btn.disabled = false;
+    unlockAudio();
 
     totalRounds  = val;
     totalSlides  = totalRounds * 24;
@@ -1305,6 +1298,12 @@
       radio.closest('.pace-option').classList.add('selected');
     });
   });
+  // sync initial state
+  const checkedPace = document.querySelector('input[name="pace"]:checked');
+  if (checkedPace) {
+    document.querySelectorAll('.pace-option').forEach(el => el.classList.remove('selected'));
+    checkedPace.closest('.pace-option').classList.add('selected');
+  }
 
   // Pause everything when app goes to background, resume when it returns
   document.addEventListener('visibilitychange', () => {
