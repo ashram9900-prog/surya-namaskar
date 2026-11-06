@@ -1,4 +1,4 @@
-const CACHE = 'surya-namaskar-v4';
+const CACHE = 'surya-namaskar-v5';
 const BASE = '/surya-namaskar';
 
 const ASSETS = [
