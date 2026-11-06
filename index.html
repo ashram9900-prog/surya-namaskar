@@ -971,11 +971,18 @@
 
   async function fetchAndDecode(src) {
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
-      const res = await fetch(src, { signal: controller.signal });
-      clearTimeout(timeout);
-      const buf = await res.arrayBuffer();
+      // Try service worker cache first, fall back to network
+      let response;
+      if ('caches' in window) {
+        response = await caches.match(src);
+      }
+      if (!response) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        response = await fetch(src, { signal: controller.signal });
+        clearTimeout(timeout);
+      }
+      const buf = await response.arrayBuffer();
       return await audioCtx.decodeAudioData(buf);
     } catch(e) { return null; }
   }

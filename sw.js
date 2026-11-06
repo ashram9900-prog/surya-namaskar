@@ -1,4 +1,4 @@
-const CACHE = 'surya-namaskar-v3';
+const CACHE = 'surya-namaskar-v4';
 const BASE = '/surya-namaskar';
 
 const ASSETS = [
@@ -35,7 +35,14 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE).then(cache =>
+      // Cache each asset individually so one failure doesn't break the rest
+      Promise.all(ASSETS.map(url =>
+        cache.add(url).catch(() => {}) // swallow per-file errors
+      ))
+    )
+  );
   self.skipWaiting();
 });
 
