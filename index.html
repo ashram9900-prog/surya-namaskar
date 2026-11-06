@@ -343,31 +343,21 @@
       max-width: 400px;
     }
 
-    /* timer ring */
-    .timer-ring-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .timer-bar-wrap {
+      width: 100%;
+      max-width: 420px;
+      height: 4px;
+      background: var(--sand);
+      border-radius: 2px;
+      overflow: hidden;
     }
 
-    .timer-ring {
-      transform: rotate(-90deg);
-    }
-
-    .timer-ring circle.track {
-      stroke: var(--sand);
-      stroke-width: 4;
-      fill: none;
-    }
-
-    .timer-ring circle.progress {
-      stroke: var(--accent);
-      stroke-width: 4;
-      fill: none;
-      stroke-linecap: round;
-      stroke-dasharray: 157;
-      stroke-dashoffset: 0;
-      transition: stroke-dashoffset 0.1s linear;
+    #timer-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      width: 100%;
+      transform-origin: left;
+      transition: none;
     }
 
     /* controls */
@@ -647,6 +637,8 @@
     <div class="counters">
       <span class="counter-pill" id="round-counter">Round 1</span>
       <button class="mute-btn" onclick="toggleMute()"><span id="mute-icon-slide">🔊</span> Music</button>
+      <button class="mute-btn" id="pause-btn" onclick="togglePause()">Pause</button>
+      <button class="mute-btn" onclick="stopSession()">Stop</button>
     </div>
   </div>
 
@@ -674,20 +666,11 @@
       <div class="pose-desc" id="pose-desc-display"></div>
     </div>
 
-    <div class="timer-ring-wrap">
-      <svg class="timer-ring" width="54" height="54" viewBox="0 0 54 54">
-        <circle class="track"    cx="27" cy="27" r="25"/>
-        <circle class="progress" id="timer-circle" cx="27" cy="27" r="25"/>
-      </svg>
+    <div class="timer-bar-wrap">
+      <div id="timer-bar"></div>
     </div>
   </div>
 
-  <div class="slide-controls">
-    <!-- hidden audio element reused for all pose instructions -->
-    <audio id="pose-audio" preload="auto"></audio>
-    <button class="btn btn-outline" id="pause-btn" onclick="togglePause()">Pause</button>
-    <button class="btn btn-outline" onclick="stopSession()">Stop</button>
-  </div>
 </section>
 
 <!-- ══════════ COMPLETION ══════════ -->
@@ -869,7 +852,7 @@
   let timerStart    = null;
   let timerRafId    = null;
 
-  const CIRCUMFERENCE = 2 * Math.PI * 25; // r=25
+  const CIRCUMFERENCE = 1;
 
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
@@ -1031,19 +1014,17 @@
     playPoseAudio(poseIdx);
   }
 
-  // Animated SVG ring that empties over duration ms
   function startTimerRing(duration) {
     cancelAnimationFrame(timerRafId);
     timerStart = performance.now();
-    const circle = document.getElementById('timer-circle');
+    const bar = document.getElementById('timer-bar');
 
     function tick(now) {
-      const elapsed  = now - timerStart;
-      const fraction = Math.min(elapsed / duration, 1);
-      circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - fraction);
+      const fraction = Math.min((now - timerStart) / duration, 1);
+      bar.style.width = `${(1 - fraction) * 100}%`;
       if (fraction < 1) timerRafId = requestAnimationFrame(tick);
     }
-    circle.style.strokeDashoffset = CIRCUMFERENCE;
+    bar.style.width = '100%';
     timerRafId = requestAnimationFrame(tick);
   }
 
