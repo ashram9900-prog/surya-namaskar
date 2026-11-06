@@ -212,9 +212,10 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
       width: 100%;
       background: var(--warm-white);
+      overflow: hidden;
     }
 
     .slide-header {
@@ -503,9 +504,11 @@
       display: flex;
       gap: 0.75rem;
       justify-content: center;
-      padding: 0.75rem 1rem 1.2rem;
+      padding: 0.75rem 1rem;
       background: var(--warm-white);
       border-top: 1px solid var(--sand);
+      width: 100%;
+      flex-shrink: 0;
     }
 
     /* completion streak card */
@@ -701,7 +704,6 @@
   </div>
 
 </section>
-
 <!-- ══════════ COMPLETION ══════════ -->
 <section id="completion">
   <div class="lotus">🙏</div>
