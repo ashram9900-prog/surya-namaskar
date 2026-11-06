@@ -622,9 +622,34 @@
     .btn-small:hover { background: var(--accent); color: white; }
 
     #import-file { display: none; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #3a2e22;
+      color: #fff;
+      padding: 0.6rem 1.4rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-family: 'Georgia', serif;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
+<div id="toast">🔥 Streak saved</div>
 
 <!-- ══════════ WELCOME ══════════ -->
 <section id="welcome">
@@ -1187,6 +1212,7 @@
     recordPractice();
     const { streak, history } = loadStreak();
     renderCompletionStreak(streak, history);
+    showToast('🔥 Streak saved');
 
     hide('slideshow');
     show('completion');
@@ -1341,8 +1367,15 @@
     }
   });
 
-  // ─── EXPORT / IMPORT STREAK ──────────────────────────────────────────────
-  function exportStreak() {
+  // ─── TOAST ───────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // ─── EXPORT / IMPORT STREAK ──────────────────────────────────────────────  function exportStreak() {
     const data = {
       [STREAK_KEY]:    localStorage.getItem(STREAK_KEY)  || '0',
       [LAST_DATE_KEY]: localStorage.getItem(LAST_DATE_KEY) || '',
