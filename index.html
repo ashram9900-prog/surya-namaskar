@@ -655,6 +655,46 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* ── INFO BUTTON ── */
+    .info-btn {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--taupe);
+      background: var(--warm-white);
+      color: var(--text-light);
+      font-size: 0.9rem;
+      font-family: 'Georgia', serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .info-popup {
+      display: none;
+      position: fixed;
+      bottom: 3.8rem;
+      right: 1rem;
+      max-width: 260px;
+      background: var(--warm-white);
+      border: 1px solid var(--sand);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      box-shadow: 0 4px 20px var(--shadow);
+      z-index: 50;
+    }
+
+    .info-popup.visible { display: block; }
+    .info-popup strong { color: var(--text-dark); }
   </style>
 </head>
 <body>
@@ -717,6 +757,13 @@
   <span class="error-msg" id="input-error"></span>
 
   <button class="btn" onclick="startSession()">Begin Practice</button>
+
+  <button class="info-btn" onclick="toggleInfo()" aria-label="Info">i</button>
+  <div class="info-popup" id="info-popup">
+    <strong>For best experience</strong><br>
+    Disable <strong>Low Power Mode</strong> before starting — it prevents the screen from staying on during practice.<br><br>
+    <em>Settings → Battery → Low Power Mode</em>
+  </div>
 </section>
 
 <!-- ══════════ SLIDESHOW ══════════ -->
@@ -946,6 +993,7 @@
   let tickMs        = 3000;
   let timerStart    = null;
   let timerRafId    = null;
+  let poseStartTime = null; // wall-clock ms when current pose started
 
   const CIRCUMFERENCE = 1;
 
@@ -1196,6 +1244,7 @@
   }
 
   function scheduleNext() {
+    poseStartTime = Date.now();
     intervalId = setTimeout(advance, tickMs);
   }
 
@@ -1397,6 +1446,15 @@
   }
 
   // ─── TOAST ───────────────────────────────────────────────────────────────
+  function toggleInfo() {
+    document.getElementById('info-popup').classList.toggle('visible');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.info-btn') && !e.target.closest('.info-popup')) {
+      document.getElementById('info-popup').classList.remove('visible');
+    }
+  });
+
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
