@@ -597,6 +597,41 @@
       letter-spacing: 0.05em;
     }
 
+    /* ── COUNTDOWN ── */
+    #countdown-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(253, 246, 236, 0.95);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    #countdown-overlay.active { display: flex; }
+
+    #countdown-number {
+      font-size: clamp(5rem, 20vw, 9rem);
+      font-family: 'Georgia', serif;
+      color: var(--accent);
+      line-height: 1;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);    opacity: 1; }
+      50%       { transform: scale(1.12); opacity: 0.8; }
+    }
+
+    #countdown-overlay p {
+      font-size: 1rem;
+      color: var(--text-light);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
     /* ── TOAST ── */
     #toast {
       position: fixed;
@@ -624,6 +659,10 @@
 </head>
 <body>
 <div id="toast">🔥 Streak saved</div>
+<div id="countdown-overlay">
+  <div id="countdown-number">5</div>
+  <p>Get ready</p>
+</div>
 
 <!-- ══════════ WELCOME ══════════ -->
 <section id="welcome">
@@ -1131,9 +1170,29 @@
     hide('welcome');
     show('slideshow');
     requestWakeLock();
+    startCountdown(() => {
+      showPose(currentPose);
+      scheduleNext();
+    });
+  }
 
-    showPose(currentPose);
-    scheduleNext();
+  function startCountdown(onComplete) {
+    const overlay = document.getElementById('countdown-overlay');
+    const numEl   = document.getElementById('countdown-number');
+    let count = 5;
+    numEl.textContent = count;
+    overlay.classList.add('active');
+
+    const interval = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(interval);
+        overlay.classList.remove('active');
+        onComplete();
+      } else {
+        numEl.textContent = count;
+      }
+    }, 1000);
   }
 
   function scheduleNext() {
