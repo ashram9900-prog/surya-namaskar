@@ -1084,6 +1084,27 @@
     timerRafId = requestAnimationFrame(tick);
   }
 
+  // ─── WAKE LOCK ───────────────────────────────────────────────────────────
+  let wakeLock = null;
+
+  async function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+    } catch(e) {}
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
+  }
+
+  // Re-acquire wake lock when tab becomes visible again (iOS releases it on hide)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && wakeLock === null && document.getElementById('slideshow').style.display !== 'none') {
+      requestWakeLock();
+    }
+  });
+
   // ─── SESSION CONTROL ─────────────────────────────────────────────────────
   function startSession() {
     const val = parseInt(document.getElementById('rounds-input').value, 10);
@@ -1109,6 +1130,7 @@
 
     hide('welcome');
     show('slideshow');
+    requestWakeLock();
 
     showPose(currentPose);
     scheduleNext();
@@ -1155,6 +1177,7 @@
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
     fadeBgMusic();
+    releaseWakeLock();
     hide('slideshow');
     show('welcome');
     isPaused = false;
@@ -1166,6 +1189,7 @@
     clearTimeout(intervalId);
     cancelAnimationFrame(timerRafId);
     fadeBgMusic();
+    releaseWakeLock();
     document.getElementById('progress-bar').style.width = '100%';
 
     const totalAsanas = totalRounds * 24;
@@ -1312,25 +1336,6 @@
     document.querySelectorAll('.pace-option').forEach(el => el.classList.remove('selected'));
     checkedPace.closest('.pace-option').classList.add('selected');
   }
-
-  // Pause everything when app goes to background, resume when it returns
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      if (!isMobile) bgMusic.pause();
-      if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
-      if (!isPaused && intervalId) {
-        clearTimeout(intervalId);
-        cancelAnimationFrame(timerRafId);
-      }
-    } else {
-      if (!isMobile && bgStarted && !bgMuted) bgMusic.play().catch(() => {});
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      if (!isPaused && slideIndex < totalSlides && document.getElementById('slideshow').style.display !== 'none') {
-        startTimerRing(tickMs);
-        scheduleNext();
-      }
-    }
-  });
 
   // ─── TOAST ───────────────────────────────────────────────────────────────
   function showToast(msg) {
